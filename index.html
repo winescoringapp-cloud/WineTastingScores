@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wine Taster 2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <style>
+    :root {
+      --primary: #5c1d24;
+      --primary-light: #fbeee0;
+      --text: #333333;
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --border: #e0e0e0;
+      --accent: #d4af37;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+    .header-bar {
+      background-color: var(--primary);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 5px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #555;
+    }
+    select, input[type="text"], input[type="email"], textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 15px;
+      background-color: #fff;
+      color: var(--text);
+      margin-bottom: 15px;
+      -webkit-appearance: none;
+    }
+    select {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23555' d='M0 0l5 6 5-6z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 12px;
+    }
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    .score-box {
+      background: #fafafa;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px dashed var(--border);
+    }
+    .total-container {
+      grid-column: span 2;
+      text-align: center;
+      background: var(--primary-light);
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 5px;
+    }
+    .total-num {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .desc-section {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .desc-header {
+      background: #fdfdfd;
+      padding: 14px 15px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      border-bottom: 1px solid transparent;
+    }
+    .desc-body {
+      display: none;
+      padding: 15px;
+      background: #ffffff;
+    }
+    .desc-body.open {
+      display: block;
+    }
+    .border-appearance { border-left: 5px solid #2196f3; }
+    .border-aroma { border-left: 5px solid #9c27b0; }
+    .border-taste { border-left: 5px solid #e91e63; }
+    .border-aftertaste { border-left: 5px solid #4caf50; }
+    .border-overall { border-left: 5px solid #ff9800; }
+    
+    .pill-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .pill {
+      background: #f0f0f0;
+      color: #444;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      border: 1px solid #e0e0e0;
+    }
+    .pill:hover { background: #e5e5e5; }
+    .pill.selected {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      font-weight: bold;
+    }
+    .req-label { color: #cc0000; font-size: 11px; font-weight: normal; margin-left: 4px; }
+    .opt-label { color: #757575; font-size: 11px; font-weight: normal; margin-left: 4px; }
+    
+    textarea.category-note {
+      height: 70px;
+      font-size: 13px;
+      margin-bottom: 0;
+      margin-top: 10px;
+      resize: none;
+    }
+    .login-btn, .save-btn {
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .login-btn:disabled, .save-btn:disabled { background-color: #cccccc; cursor: not-allowed; }
+    
+    .toggle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #eee;
+    }
+    .toggle-wrapper input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .status-bar {
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+      margin-top: 15px;
+    }
+    
+    /* Login Overlay */
+    #loginOverlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(92, 29, 36, 0.95); z-index: 1000;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-box {
+      background: white; width: 100%; max-width: 400px;
+      padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    #roleOverlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); z-index: 2000;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .role-box {
+      background: white; width: 100%; max-width: 360px;
+      padding: 25px; border-radius: 8px; text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loginOverlay">
+    <div class="login-box">
+      <div style="text-align:center; margin-bottom:20px;">
+        <span style="font-size: 28px;">🍷</span>
+        <h2 style="color:var(--primary); margin-top:10px;">WINE TASTER 2026</h2>
+        <p style="font-size:12px; color:#666; margin-top:4px;">Secure Ecosystem Sign-In</p>
+      </div>
+      
+      <div id="loginForm">
+        <label for="loginEmailInput">REGISTERED EMAIL ADDRESS</label>
+        <input type="email" id="loginEmailInput" placeholder="name@domain.com" autocomplete="email">
+        <button class="login-btn" onclick="attemptLogin()">ENTER APPLICATION</button>
+        <div style="text-align:center; margin-top:20px; font-size:13px;">
+          <span style="color:#666">New to the system?</span> 
+          <a href="#" onclick="showRegister()" style="color:var(--primary); font-weight:bold; text-decoration:none; margin-left:3px;">Create Account</a>
+        </div>
+      </div>
+
+      <div id="registerForm" style="display:none;">
+        <label for="regEmail">YOUR EMAIL ADDRESS</label>
+        <input type="email" id="regEmail" placeholder="name@domain.com">
+        
+        <label for="regType">ACCOUNT CLASSIFICATION TYPE</label>
+        <select id="regType" onchange="toggleRegFields()">
+          <option value="">-- Select Type --</option>
+          <option value="ChapterStandard">Chapter Member (Standard Evaluation)</option>
+          <option value="ChapterNTP">Chapter Member (National Tasting Panel)</option>
+          <option value="NTPComm">National Committee Judge / Admin</option>
+        </select>
+
+        <div id="regChapterDiv" style="display:none;">
+          <label for="regChapterName">ASSIGNED HOME CHAPTER NAME</label>
+          <input type="text" id="regChapterName" placeholder="e.g. HudsonMA">
+        </div>
+
+        <div id="regGroupDiv" style="display:none;">
+          <label for="regGroupName">VOTING GROUP / SYSTEM IDENTIFIER</label>
+          <input type="text" id="regGroupName" placeholder="e.g. Group A">
+        </div>
+
+        <div id="regCodeDiv" style="display:none;">
+          <label for="regAdminCode">SECURITY VERIFICATION CODE</label>
+          <input type="text" id="regAdminCode" placeholder="Enter Registration Code">
+          <div id="codeInstructions" style="font-size:11px; color:#666; margin-top:-10px; margin-bottom:15px; line-height:1.3;"></div>
+        </div>
+
+        <button class="login-btn" onclick="submitRegistration()">CREATE ACCOUNT</button>
+        <div style="text-align:center; margin-top:15px; font-size:13px;">
+          <a href="#" onclick="showLogin()" style="color:#666; text-decoration:none;">← Return to Sign In</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="roleOverlay">
+    <div class="role-box">
+      <h3 style="color:var(--primary); margin-bottom:15px;">Multiple Profiles Found</h3>
+      <p style="font-size:13px; color:#555; margin-bottom:15px;">Select the dynamic role perspective configuration you wish to initialize:</p>
+      <div id="roleButtons"></div>
+    </div>
+  </div>
+
+  <div id="appContent" style="display:none;">
+    <div class="header-bar">WINE TASTER ENGINE</div>
+    
+    <div class="container">
+      <div class="card" id="selectionCard">
+        <div class="card-title">Active Metrics Workspace</div>
+        
+        <div style="display:none; margin-bottom:15px;" id="tasterSelectWrapper">
+          <label for="tasterSelect">ACTIVE PROFILE TOKEN</label>
+          <select id="tasterSelect" onchange="checkForExistingData()"></select>
+        </div>
+
+        <label id="wineLabel" for="wineSelect">SELECT ACTIVE VARIETAL BOTTLE</label>
+        <select id="wineSelect" onchange="handleWineChange()">
+          <option value="">-- Select Wine --</option>
+        </select>
+        
+        <input type="text" id="wineInput" style="display:none;" placeholder="Enter Manual Wine Identifier..." oninput="handleWineChange()">
+        <select id="adminWineSelect" style="display:none;" onchange="handleWineChange()"></select>
+        
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="isJudge">
+          <label for="isJudge" style="margin-bottom:0; cursor:pointer;">Evaluate Entry as Certified Wine Judge</label>
+        </div>
+
+        <div class="toggle-wrapper" style="margin-bottom:0;">
+          <input type="checkbox" id="noDescMode" onchange="renderDescriptors()">
+          <label for="noDescMode" style="margin-bottom:0; cursor:pointer;">Blind Evaluation Matrix (Hide Helper Labels)</label>
+        </div>
+      </div>
+
+      <div class="card" id="scoringCard" style="display:none;">
+        <div class="card-title">Organoleptic Scoring Matrix</div>
+        
+        <div class="toggle-wrapper" style="margin-bottom:15px;">
+          <input type="checkbox" id="maxMode" onchange="toggleMaxMode()">
+          <label for="maxMode" style="margin-bottom:0; cursor:pointer;">Initialize System Default Parameters to Maximum Value</label>
+        </div>
+
+        <div class="score-grid">
+          <div class="score-box">
+            <label for="scoreApp">APPEARANCE (Max 3)</label>
+            <select id="scoreApp" onchange="calcTotal()"></select>
+          </div>
+          <div class="score-box">
+            <label for="scoreAro">AROMA / BOUQUET (Max 6)</label>
+            <select id="scoreAro" onchange="calcTotal()"></select>
+          </div>
+          <div class="score-box">
+            <label for="scoreTas">TASTE / TEXTURE (Max 6)</label>
+            <select id="scoreTas" onchange="calcTotal()"></select>
+          </div>
+          <div class="score-box">
+            <label for="scoreAft">AFTERTASTE FINISH (Max 3)</label>
+            <select id="scoreAft" onchange="calcTotal()"></select>
+          </div>
+          <div class="score-box">
+            <label for="scoreOvr">OVERALL QUALITY (Max 2)</label>
+            <select id="scoreOvr" onchange="calcTotal()"></select>
+          </div>
+          
+          <div class="total-container">
+            <div style="font-size:11px; font-weight:bold; color:#777; text-transform:uppercase;">Cumulative Score Summary</div>
+            <div class="total-num" id="totalDisplay">11.0</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="descriptorRoot" style="display:none;"></div>
+
+      <div style="margin-top:20px;">
+        <button id="saveBtn" class="save-btn" onclick="submitForm()">COMMIT EVALUATION TO DATABASE</button>
+      </div>
+      
+      <div class="status-bar" id="statusArea">Production Build Initialization Layer...</div>
+    </div>
+  </div>
+
+  <script>
+    const UI_VERSION = "5.0-EXTERNAL-HOST";
+    console.log("--- INITIALIZING APP VERSION " + UI_VERSION + " ---");
+    
+    // REPLACE THIS URL WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP LINK EVERY TIME YOU EXECUTED A NEW DEPLOYMENT
+    const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlwibVIJ7XnLglJSZR0CX4h18HJcu97QOE2kNd2sMMrbAEFGl-_MnB3XZn1eCSY6xu/exec";
+
+    // Global memory arrays dynamically pulled via AJAX from server database endpoint
+    window.WINES = [];
+    window.DESCRIPTORS = [];
+    window.USERS = [];
+    window.IMAGE_MAP = {};
+
+    let selectedState = {}; 
+    let currentUserRole = ""; 
+    let currentUserChapter = ""; 
+    let anonymousTasterToken = "";
+
+    window.onload = function() {
+      // Setup base drop downs
+      populateScore('scoreApp', 3); 
+      populateScore('scoreAro', 6); 
+      populateScore('scoreTas', 6); 
+      populateScore('scoreAft', 3); 
+      populateScore('scoreOvr', 2);
+      resetScores(false);
+
+      const statusAreaEl = document.getElementById('statusArea');
+      if (statusAreaEl) {
+         statusAreaEl.innerHTML = "Fetching secure ecosystem metrics...";
+      }
+
+      console.log("FETCH TRACE: Requesting database arrays from Google script data routing gateway...");
+      
+      // Perform an isolated network fetch extraction to map database without forcing active Google cookie authorization headers
+      fetch(GOOGLE_WEB_APP_URL)
+        .then(function(response) {
+          if (!response.ok) {
+             throw new Error("Ecosystem connection breakdown. HTTP status returned: " + response.status);
+          }
+          return response.json();
+        })
+        .then(function(data) {
+          console.log("FETCH TRACE: Raw database package received successfully.");
+          
+          // Map response data matrices directly to local layout rules
+          window.WINES = data.wines || [];
+          window.DESCRIPTORS = data.descriptors || [];
+          window.USERS = data.users || [];
+          window.IMAGE_MAP = data.images || {};
+
+          if (statusAreaEl) {
+             statusAreaEl.innerHTML = "Production Build API Active (" + UI_VERSION + ")";
+          }
+
+          // Parse current URL parameter tags right out of the local device address window
+          const urlParams = new URLSearchParams(window.location.search);
+          const safeChapterCheck = String(urlParams.get('chap') || "").trim().toLowerCase();
+          
+          console.log("PARAMETER TRACE: Local URL evaluation extracted 'chap' token: '" + safeChapterCheck + "'");
+
+          if (safeChapterCheck.indexOf("hudsonma") > -1) {
+             executeCustomChapterLogin(safeChapterCheck);
+          } else {
+             const savedUser = localStorage.getItem('wineTasterEmail');
+             if (savedUser) {
+                document.getElementById('loginEmailInput').value = savedUser;
+             }
+             filterWineDropdown("ntp");
+          }
+        })
+        .catch(function(error) {
+          console.error("CRITICAL CONNECTION FAILURE: ", error);
+          if (statusAreaEl) {
+             statusAreaEl.innerHTML = "<span style='color:red; font-weight:bold;'>Initialization Failure: Cannot communicate with script data matrix layer.</span>";
+          }
+        });
+    };
+
+    function executeCustomChapterLogin(incomingParam) {
+       currentUserChapter = "HudsonMA";
+       currentUserRole = "ntpuser";
+       
+       let deviceToken = localStorage.getItem('hudson_anon_token');
+       if (!deviceToken) {
+          const randomHex = Math.floor(Math.random() * 16777215).toString(16).toUpperCase();
+          deviceToken = "Hudson_Taster_" + randomHex;
+          localStorage.setItem('hudson_anon_token', deviceToken);
+       }
+       anonymousTasterToken = deviceToken;
+
+       const mainSel = document.getElementById('tasterSelect');
+       if (mainSel) {
+         mainSel.innerHTML = ""; 
+         const opt = document.createElement('option'); 
+         opt.value = anonymousTasterToken; 
+         opt.text = anonymousTasterToken;
+         mainSel.appendChild(opt);
+         mainSel.value = anonymousTasterToken;
+       }
+
+       document.getElementById('loginOverlay').style.display = 'none';
+       document.getElementById('appContent').style.display = 'block';
+       
+       let targetScopeToken = "HUDSONMA_NTP";
+       if (incomingParam === "hudsonma_chap") {
+          targetScopeToken = "HUDSONMA"; 
+       }
+       
+       filterWineDropdown('chapter', 'ntpchapadmin', targetScopeToken);
+       configureUserMode('chapter', 'ntpchapadmin');
+       
+       document.getElementById('wineLabel').innerText = "SELECT WINE";
+       document.getElementById('noDescMode').checked = false; 
+       renderDescriptors();
+    }
+
+    function filterWineDropdown(mode, role, overrideScope) {
+      const wineSel = document.getElementById('wineSelect');
+      const adminSel = document.getElementById('adminWineSelect');
+      
+      wineSel.innerHTML = '<option value="">-- Select Wine --</option>';
+      adminSel.innerHTML = '<option value="">-- Select Wine --</option>';
+      
+      let targetScope = 'NTP';
+      if (overrideScope) { 
+          targetScope = overrideScope.toUpperCase(); 
+      } else {
+          const baseChapter = (currentUserChapter || "").toUpperCase();
+          if (role === 'ntpchapadmin') { 
+              targetScope = baseChapter + "_NTP"; 
+          } else if (role === 'chapteradmin' || role === 'chapadmin') { 
+              targetScope = baseChapter; 
+          } else if (role === 'ntpcomm' || role === 'ntpcommadmin') { 
+              targetScope = 'NTP_COMM'; 
+          } else if (mode === 'chapter') { 
+              targetScope = baseChapter; 
+          } else if (role === 'ntpuser') { 
+              targetScope = 'NTP'; 
+          }
+      }
+      
+      targetScope = targetScope.trim().toUpperCase();
+      let count = 0;
+
+      if (!window.WINES || window.WINES.length === 0) return;
+
+      window.WINES.forEach(function(w) {
+        const currentWineScope = String(w.scope || "").trim().toUpperCase();
+        if (currentWineScope === targetScope) {
+          count++;
+          const userTxt = w.code + " – " + w.category;
+          
+          const opt1 = document.createElement('option'); 
+          opt1.value = w.code; 
+          opt1.text = userTxt; 
+          wineSel.appendChild(opt1);
+          
+          const opt2 = document.createElement('option'); 
+          opt2.value = w.code; 
+          opt2.text = w.code + " – " + (w.fullName || w.category); 
+          adminSel.appendChild(opt2);
+        }
+      });
+
+      if (count === 0) {
+         const cleanDisplayToken = targetScope.replace("_WINELIST", "").replace("_WINE_LIST", "");
+         const noDataTxt = "(No wines found for " + cleanDisplayToken + ")";
+         
+         const optA = document.createElement('option'); optA.text = noDataTxt; wineSel.appendChild(optA);
+         const optB = document.createElement('option'); optB.text = noDataTxt; adminSel.appendChild(optB);
+      }
+    }
+
+    function getActiveWineCode() {
+      const input = document.getElementById("wineInput");
+      if (input && input.style.display !== "none" && input.value) return input.value.trim();
+      
+      const adminDrop = document.getElementById("adminWineSelect");
+      if (currentUserRole === "ntpcommadmin" || currentUserRole === "admin") {
+         if (adminDrop && adminDrop.value) return adminDrop.value;
+      }
+      
+      const drop = document.getElementById("wineSelect");
+      if (drop) return drop.value;
+      
+      return "";
+    }
+
+    function handleWineChange() {
+      renderDescriptors();
+      checkForExistingData();
+    }
+
+    function renderDescriptors() {
+      const root = document.getElementById("descriptorRoot");
+      const scoreCard = document.getElementById("scoringCard");
+      const wineCode = String(getActiveWineCode() || "").trim().toUpperCase();
+      
+      selectedState = {};
+      
+      if (!wineCode) {
+        root.innerHTML = "<div style='text-align:center; padding:40px; color:#bbb;'>Select a wine to load descriptors.</div>";
+        scoreCard.style.display = "none";
+        return;
+      }
+      
+      const wineObj = window.WINES.find(function(w) {
+        return String(w.code || "").trim().toUpperCase() === wineCode;
+      });
+      
+      if (!wineObj) {
+        root.innerHTML = "<div style='text-align:center; padding:40px; color:#bbb;'>Select a wine to load descriptors.</div>";
+        scoreCard.style.display = "none";
+        return;
+      }
+      
+      scoreCard.style.display = "block";
+      root.style.display = "block";
+      
+      const currentType = wineObj.type ? String(wineObj.type).toLowerCase().trim() : "";
+      const currentCat = wineObj.category ? String(wineObj.category).toLowerCase().trim() : "";
+      const fullTypeSearch = (currentType + " " + currentCat).toLowerCase();
+      
+      let html = "";
+      const coreCats = ["Appearance", "Aroma", "Taste", "Aftertaste", "Overall"];
+      const noDesc = document.getElementById("noDescMode").checked;
+      
+      window.DESCRIPTORS.forEach(function(superCat) {
+        const catName = superCat.superCategory;
+        const catKey = String(catName).toLowerCase();
+        let groupHtml = "";
+        const reqText = getRequirementText(catName, "super");
+        
+        if (superCat.families) {
+          superCat.families.forEach(function(fam) { 
+            let famHtml = "";
+            let subGroups = fam.subcategories;
+            if (!subGroups || subGroups.length === 0) subGroups = [fam]; 
+            
+            subGroups.forEach(function(sub) {
+              if (!sub.aromas) return;
+              
+              const visible = sub.aromas.filter(function(item) {
+                if (!item.typeLimit) return true;
+                const limit = String(item.typeLimit).toLowerCase().trim();
+                if (limit === "" || limit === "both" || limit === "all") return true;
+                
+                // Varietal match condition logic bypass fallback
+                if (fullTypeSearch.includes(limit) || limit.includes(currentCat) || currentCat.includes(limit)) {
+                  return true;
+                }
+                return false;
+              });
+              
+              if (visible.length > 0) {
+                let instr = (sub.instruction || "").toString();
+                if (instr.toLowerCase().includes("select 1, if important")) instr = "Optional, select 1"; 
+                else if (instr.toLowerCase().includes("if important")) instr = instr.replace(/if important/i, "optional"); 
+                if (sub.name && sub.name.toLowerCase().includes("aesthetic")) instr = "Optional, select 1"; 
+                
+                const isRadio = instr.includes("1");
+                const isYellow = instr.toLowerCase().includes("optional");
+                let labelClass = isYellow ? "opt-label" : "req-label";
+                let labelText = instr;
+                
+                if (noDesc && !isYellow) labelText = "";
+                
+                const displaySubName = sub.name || fam.name || "Options";
+                const label = labelText ? displaySubName + " <span class='" + labelClass + "'>(" + labelText + ")</span>" : displaySubName;
+                const mode = isRadio ? "single" : "multi";
+                
+                famHtml += "<div style='margin-bottom:10px;'><div style='font-size:13px; font-weight:bold; color:#555; margin-bottom:5px;'><span>" + label + "</span></div><div class='pill-container' data-cat='" + catName + "' data-mode='" + mode + "'>";
+                visible.forEach(function(item) {
+                  const val = item.name.replace(/'/g, "\\'");
+                  famHtml += "<div class='pill' onclick=\"togglePill(this, '" + catName + "', '" + val + "')\">" + item.name + "</div>";
+                });
+                famHtml += "</div></div>";
+              }
+            });
+            
+            if (famHtml) {
+              const famReq = getRequirementText(fam.name, "family");
+              groupHtml += "<div style='margin-top:15px;'><div style='font-weight:bold; font-size:15px; color:#222; margin-bottom:8px; border-bottom:1px solid #eee;'>🔸 " + fam.name + " <span class='req-label'>" + famReq + "</span></div>" + famHtml + "</div>";
+            }
+          });
+        }
+        
+        if (groupHtml || coreCats.some(function(c) { return catKey.includes(c.toLowerCase()); })) {
+          // FIXED: Accordion container loaded cleanly without 'open' flag class assignment to keep it collapsed by default
+          html += "<div class='desc-section border-" + catKey + "'><div class='desc-header' onclick='this.nextElementSibling.classList.toggle(\"open\")'><span>" + catName + " <span class='req-label'>" + reqText + "</span></span> <span style='font-size:18px;'>+</span></div><div class='desc-body'>" + groupHtml + "<textarea id='note_" + catName + "' class='category-note' placeholder='Add specific notes for " + catName + " (optional)...'></textarea></div></div>";
+        }
+      });
+      
+      root.innerHTML = html;
+    }
+
+    function configureUserMode(mode, role) { 
+       const userMode = (mode || "").toLowerCase(); 
+       const label = document.getElementById('wineLabel'); 
+       const drop = document.getElementById('wineSelect'); 
+       const input = document.getElementById('wineInput'); 
+       const noDescBox = document.getElementById('noDescMode'); 
+       const noDescLabel = noDescBox.parentElement; 
+       
+       document.getElementById('selectionCard').style.display = 'block'; 
+       document.getElementById('scoringCard').style.display = 'block'; 
+       document.getElementById('descriptorRoot').style.display = 'block'; 
+       
+       if (userMode === 'group') { 
+          label.innerText = "ENTER WINE NAME"; drop.style.display = 'none'; drop.value = ""; input.style.display = 'block'; noDescLabel.style.display = 'none'; noDescBox.checked = true; 
+       } else if (userMode === 'chapter' || role === 'ntpchapadmin') { 
+          label.innerText = "SELECT CHAPTER WINE"; drop.style.display = 'block'; input.style.display = 'none'; input.value = ""; noDescLabel.style.display = 'none'; noDescBox.checked = false; 
+       } else { 
+          label.innerText = "SELECT WINE"; drop.style.display = 'block'; input.style.display = 'none'; input.value = ""; 
+          if (role === 'ntpcomm' || role === 'ntpadmin' || role === 'admin') { 
+             noDescLabel.style.display = 'none'; noDescBox.checked = false; 
+          } else { 
+             noDescLabel.style.display = 'flex'; noDescBox.checked = false; 
+          } 
+       } 
+    }
+
+    function togglePill(el, category, value) { 
+      const container = el.parentElement; 
+      const mode = container.getAttribute('data-mode'); 
+      if (!selectedState[category]) selectedState[category] = [];
+      
+      if (mode === 'single') { 
+        if (el.classList.contains('selected')) { 
+          el.classList.remove('selected'); removeFromArray(selectedState[category], value); 
+        } else { 
+          container.querySelectorAll('.pill').forEach(function(sib) { 
+            if (sib.classList.contains('selected')) { 
+               sib.classList.remove('selected'); removeFromArray(selectedState[category], sib.innerText.trim()); 
+            } 
+          }); 
+          el.classList.add('selected'); selectedState[category].push(value); 
+        } 
+      } else { 
+        if (el.classList.contains('selected')) { 
+          el.classList.remove('selected'); removeFromArray(selectedState[category], value); 
+        } else { 
+          el.classList.add('selected'); selectedState[category].push(value); 
+        } 
+      } 
+    }
+
+    function removeFromArray(arr, val) { 
+      const index = arr.indexOf(val); if (index > -1) arr.splice(index, 1); 
+    }
+
+    function attemptLogin() { 
+      const inputVal = document.getElementById('loginEmailInput').value.trim(); 
+      if (!inputVal) { alert("Please enter your email."); return; }
+      
+      const matches = window.USERS.filter(function(u) { 
+        return u.email.toLowerCase() === inputVal.toLowerCase(); 
+      }); 
+      
+      if (matches.length === 0) { 
+        if (confirm("Email not found. Register?")) showRegister(); return; 
+      } 
+      
+      if (matches.length > 1) { 
+        const overlay = document.getElementById('roleOverlay'); 
+        const btnContainer = document.getElementById('roleButtons'); 
+        btnContainer.innerHTML = ""; 
+        matches.forEach(function(u) { 
+          const btn = document.createElement('div'); 
+          btn.innerHTML = "<div style='padding:10px; border:1px solid #ccc; margin-bottom:5px; cursor:pointer; background:#f9f9f9; color:#333;'><strong>" + u.role + "</strong><br><span style='font-size:11px;'> " + (u.chapter || "National") + "</span></div>"; 
+          btn.addEventListener('click', function() { 
+            overlay.style.display = 'none'; completeLogin(u); 
+          }); 
+          btnContainer.appendChild(btn); 
+        }); 
+        overlay.style.display = 'flex'; 
+      } else { 
+        completeLogin(matches[0]); 
+      } 
+    }
+
+    function completeLogin(userObj) {
+      currentUserRole = userObj.role;
+      currentUserChapter = userObj.chapter || "";
+      localStorage.setItem('wineTasterEmail', userObj.email);
+      
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('appContent').style.display = 'block';
+      
+      const tasterSel = document.getElementById('tasterSelect');
+      tasterSel.innerHTML = "";
+      const opt = document.createElement('option'); opt.value = userObj.email; opt.text = userObj.email;
+      tasterSel.appendChild(opt);
+      
+      filterWineDropdown(userObj.mode, userObj.role);
+      configureUserMode(userObj.mode, userObj.role);
+      renderDescriptors();
+    }
+
+    function showRegister() { 
+      document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'block'; 
+    }
+    function showLogin() { 
+      document.getElementById('loginForm').style.display = 'block'; document.getElementById('registerForm').style.display = 'none'; 
+    }
+
+    function toggleRegFields() { 
+      const type = document.getElementById('regType').value; 
+      const codeDiv = document.getElementById('regCodeDiv'); 
+      const chapDiv = document.getElementById('regChapterDiv'); 
+      const groupDiv = document.getElementById('regGroupDiv'); 
+      const instrDiv = document.getElementById('codeInstructions'); 
+      
+      if (!type) { codeDiv.style.display = 'none'; chapDiv.style.display = 'none'; groupDiv.style.display = 'none'; return; } 
+      
+      codeDiv.style.display = 'block'; 
+      const isAdmin = ['NTPComm', 'ChapterAdmin', 'GroupAdmin', 'NTPChapAdmin', 'NTPCommAdmin'].includes(type); 
+      if (isAdmin) { 
+        instrDiv.innerHTML = "This Admin role requires approval. Please email access coordinators."; 
+      } else { 
+        instrDiv.innerHTML = "Please contact your Chapter or Group Leader to obtain registration code verification parameters."; 
+      } 
+      
+      const needsChapter = ['ChapterAdmin', 'ChapterNTP', 'ChapterStandard', 'NTPChapAdmin'].includes(type); 
+      chapDiv.style.display = needsChapter ? 'block' : 'none'; 
+      const needsGroup = ['GroupAdmin', 'Group'].includes(type); 
+      groupDiv.style.display = needsGroup ? 'block' : 'none'; 
+    }
+
+    function submitRegistration() {
+       const email = document.getElementById('regEmail').value.trim();
+       const type = document.getElementById('regType').value;
+       const code = document.getElementById('regAdminCode').value;
+       const chap = document.getElementById('regChapterName').value.trim();
+       const grp = document.getElementById('regGroupName').value.trim();
+       if (!email || !type) { alert("Please fill in email and verification classification type."); return; }
+       
+       const btn = document.querySelector('#registerForm .login-btn');
+       btn.innerText = "Creating Account Profile..."; btn.disabled = true;
+
+       // Execute standard cross-origin registration request
+       fetch(GOOGLE_WEB_APP_URL + "?action=register", {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ email: email, regType: type, adminCode: code, chapterName: chap, groupName: grp })
+       })
+       .then(response => response.text())
+       .then(msg => {
+          alert(msg); btn.innerText = "Create Account"; btn.disabled = false;
+          if (msg.includes("Success")) {
+             window.USERS.push({ email: email, role: "ChapMember", mode: "Chapter", chapter: chap });
+             showLogin(); document.getElementById('loginEmailInput').value = email;
+          }
+       })
+       .catch(err => { alert("Registration Processing Error: " + err); btn.innerText = "Create Account"; btn.disabled = false; });
+    }
+
+    function getRequirementText(name, type) { 
+      if (currentUserRole !== 'ntpcomm' && currentUserRole !== 'ntpcommadmin' && currentUserRole !== 'admin') return '(Optional)'; 
+      if (document.getElementById('noDescMode').checked) return ''; 
+      if (type === 'super') { 
+        if (name === 'Appearance') return '(3 required)'; if (name === 'Aroma') return '(5 required)'; if (name === 'Taste') return '(10 required)'; if (name === 'Aftertaste') return '(2 required)'; if (name === 'Overall') return '(2 required)'; 
+      }
+      if (type === 'family' && name === 'Fruits') return '(1 required)';
+      return '';
+    }
+
+    function populateScore(elementId, max) {
+      const el = document.getElementById(elementId); if (!el) return; el.innerHTML = "";
+      for (let i = max; i >= 0; i -= 0.5) {
+        const opt = document.createElement("option"); opt.value = i; opt.text = i; el.appendChild(opt);
+      }
+    }
+
+    function resetScores(isMax) {
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+      if (isMax) { set("scoreApp", 3); set("scoreAro", 6); set("scoreTas", 6); set("scoreAft", 3); set("scoreOvr", 2); } 
+      else { set("scoreApp", 3); set("scoreAro", 2.5); set("scoreTas", 2.5); set("scoreAft", 1); set("scoreOvr", 1); }
+      calcTotal();
+    }
+
+    function toggleMaxMode() { resetScores(document.getElementById("maxMode").checked); }
+
+    function calcTotal() {
+      const s1 = parseFloat(document.getElementById("scoreApp").value) || 0;
+      const s2 = parseFloat(document.getElementById("scoreAro").value) || 0;
+      const s3 = parseFloat(document.getElementById("scoreTas").value) || 0;
+      const s4 = parseFloat(document.getElementById("scoreAft").value) || 0;
+      const s5 = parseFloat(document.getElementById("scoreOvr").value) || 0;
+      const total = s1 + s2 + s3 + s4 + s5;
+      const display = document.getElementById("totalDisplay");
+      display.innerText = total.toFixed(1);
+      
+      if (total >= 17) display.style.color = "#D4AF37";
+      else if (total >= 15) display.style.color = "#C0C0C0";
+      else if (total >= 13) display.style.color = "#CD7F32";
+      else display.style.color = "#e65100";
+    }
+
+    function expandActiveSections() {
+      document.querySelectorAll(".desc-body").forEach(body => {
+        body.classList.toggle("open", body.querySelectorAll('.pill.selected').length > 0);
+      });
+    }
+
+    function checkForExistingData() {
+      const wineCode = getActiveWineCode(); const statusArea = document.getElementById('statusArea'); 
+      if (!wineCode) { statusArea.innerHTML = "Production Build API Active (" + UI_VERSION + ")"; return; }
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('chap') && urlParams.get('chap').toLowerCase().indexOf("hudsonma") > -1) {
+         statusArea.innerHTML = "Syncing anonymous device storage values...";
+         
+         fetch(GOOGLE_WEB_APP_URL + "?action=getExisting&taster=" + anonymousTasterToken + "&wine=" + wineCode + "&tab=HudsonMA_NTP_Scores")
+         .then(res => res.json())
+         .then(result => {
+            if (result.found) { 
+              statusArea.innerHTML = "<span style='color:#2e7d32; font-weight:bold;'>✓ Loaded previous entries cleanly</span>"; 
+              populateFormWithData(result); expandActiveSections(); 
+            } else { 
+              statusArea.innerHTML = "Production Build API Active (" + UI_VERSION + ")"; resetScores(document.getElementById('maxMode').checked); 
+            }
+         });
+         return;
+      }
+    }
+
+    function populateFormWithData(data) { 
+       document.getElementById('scoreApp').value = parseFloat(data.scores.app); 
+       document.getElementById('scoreAro').value = parseFloat(data.scores.aro); 
+       document.getElementById('scoreTas').value = parseFloat(data.scores.tas); 
+       document.getElementById('scoreAft').value = parseFloat(data.scores.aft); 
+       document.getElementById('scoreOvr').value = parseFloat(data.scores.ovr); 
+       calcTotal(); 
+       
+       document.getElementById('isJudge').checked = (data.isJudge === "Yes" || data.isJudge === true);
+       selectedState = { 'Appearance': data.descriptors.app, 'Aroma': data.descriptors.aro, 'Taste': data.descriptors.tas, 'Aftertaste': data.descriptors.aft, 'Overall': data.descriptors.ovr }; 
+       
+       const cats = ['Appearance', 'Aroma', 'Taste', 'Aftertaste', 'Overall'];
+       cats.forEach(function(c) {
+           const list = selectedState[c] || [];
+           const noteIndex = list.findIndex(item => item.startsWith('(') && item.endsWith(')'));
+           if (noteIndex > -1) {
+               const box = document.getElementById('note_' + c);
+               if (box) box.value = list[noteIndex].slice(1, -1);
+           }
+       });
+       
+       document.querySelectorAll('.pill').forEach(pill => { 
+           const catName = pill.parentElement.getAttribute('data-cat'); 
+           pill.classList.toggle('selected', selectedState[catName] && selectedState[catName].includes(pill.innerText.trim()));
+       }); 
+    }
+
+    function submitForm() {
+       const saveBtn = document.getElementById('saveBtn');
+       const wineCode = getActiveWineCode();
+       if (!wineCode) { alert("Please select a valid bottle varietal target."); return; }
+       
+       const currentTotal = parseFloat(document.getElementById('totalDisplay').textContent) || 0;
+       if (currentTotal < 10) { alert("Total Score parameters must evaluate to 10 or above."); return; }
+       
+       const cats = ['Appearance', 'Aroma', 'Taste', 'Aftertaste', 'Overall'];
+       cats.forEach(function(c) {
+           const noteBox = document.getElementById('note_' + c);
+           if (noteBox && noteBox.value.trim() !== "") {
+               if (!selectedState[c]) selectedState[c] = [];
+               selectedState[c].push("(" + noteBox.value.trim().replace(/,/g, ';') + ")");
+           }
+       });
+       
+       const wineObj = window.WINES.find(w => w.code === wineCode);
+       const urlParams = new URLSearchParams(window.location.search);
+       const isHudson = (urlParams.get('chap') && urlParams.get('chap').toLowerCase().indexOf("hudsonma") > -1);
+       
+       const payload = {
+          taster: isHudson ? anonymousTasterToken : document.getElementById('tasterSelect').value,
+          role: currentUserRole, wineCode: wineCode, wineFullName: wineObj ? wineObj.fullName : wineCode, wineType: wineObj ? wineObj.type : "Manual Entry",
+          appearanceScore: document.getElementById('scoreApp').value, aromaScore: document.getElementById('scoreAro').value, tasteScore: document.getElementById('scoreTas').value, aftertasteScore: document.getElementById('scoreAft').value, overallScore: document.getElementById('scoreOvr').value, totalScore: document.getElementById('totalDisplay').textContent,
+          appearanceDescriptors: selectedState['Appearance'] || [], aromaDescriptors: selectedState['Aroma'] || [], tasteDescriptors: selectedState['Taste'] || [], aftertasteDescriptors: selectedState['Aftertaste'] || [], overallDescriptors: selectedState['Overall'] || [],
+          isWineJudge: document.getElementById('isJudge').checked ? "Yes" : "No", targetTabOverride: isHudson ? "HudsonMA_NTP_Scores" : null
+       };
+       
+       saveBtn.innerText = "Committing transaction..."; 
+       saveBtn.disabled = true;
+
+       // Transmit the post data across the network via an un-wrapped standard CORS pipeline request
+       fetch(GOOGLE_WEB_APP_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+       })
+       .then(response => response.text())
+       .then(msg => {
+          alert(msg); saveBtn.innerText = "COMMIT EVALUATION TO DATABASE"; saveBtn.disabled = false;
+          if (msg.includes("Success")) { 
+             document.getElementById('wineSelect').value = ""; 
+             renderDescriptors(); 
+             resetScores(document.getElementById('maxMode').checked); 
+          }
+       })
+       .catch(err => { 
+          alert("Data Transaction Error: " + err.message); 
+          saveBtn.innerText = "COMMIT EVALUATION TO DATABASE"; saveBtn.disabled = false; 
+       });
+    }
+  </script>
+</body>
+</html>
