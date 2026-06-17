@@ -242,7 +242,12 @@
         <p style="font-size:12px; color:#666; margin-top:4px;">Secure Ecosystem Sign-In</p>
       </div>
       
-      <div id="loginForm">
+      <div id="loadingState" style="text-align: center; padding: 20px 0;">
+        <div style="font-size: 15px; font-weight: bold; color: var(--primary); margin-bottom: 8px;">Please wait...</div>
+        <div style="font-size: 13px; color: #666;">Initializing tasting panel workspace</div>
+      </div>
+      
+      <div id="loginForm" style="display:none;">
         <label for="loginEmailInput">REGISTERED EMAIL ADDRESS</label>
         <input type="email" id="loginEmailInput" placeholder="name@domain.com" autocomplete="email">
         <button class="login-btn" onclick="attemptLogin()">ENTER APPLICATION</button>
@@ -287,7 +292,6 @@
       </div>
     </div>
   </div>
-
   <div id="roleOverlay">
     <div class="role-box">
       <h3 style="color:var(--primary); margin-bottom:15px;">Multiple Profiles Found</h3>
@@ -435,9 +439,15 @@
           
           console.log("PARAMETER TRACE: Local URL evaluation extracted 'chap' token: '" + safeChapterCheck + "'");
 
+          // Hide the loading spinner text now that data is ready
+          document.getElementById('loadingState').style.display = 'none';
+
           if (safeChapterCheck.indexOf("hudsonma") > -1) {
+             // If a Hudson link, bypass the login screen entirely!
              executeCustomChapterLogin(safeChapterCheck);
           } else {
+             // If a normal link, gracefully show the standard sign-in prompt
+             document.getElementById('loginForm').style.display = 'block';
              const savedUser = localStorage.getItem('wineTasterEmail');
              if (savedUser) {
                 document.getElementById('loginEmailInput').value = savedUser;
@@ -447,9 +457,12 @@
         })
         .catch(function(error) {
           console.error("CRITICAL CONNECTION FAILURE: ", error);
+          document.getElementById('loadingState').style.display = 'none';
           if (statusAreaEl) {
              statusAreaEl.innerHTML = "<span style='color:red; font-weight:bold;'>Initialization Failure: Cannot communicate with script data matrix layer.</span>";
           }
+          // fallback to let them try logging in anyway if the network hiccuped
+          document.getElementById('loginForm').style.display = 'block';
         });
     };
 
