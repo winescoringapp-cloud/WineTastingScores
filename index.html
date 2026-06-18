@@ -139,7 +139,7 @@
     .border-taste { border-left: 5px solid #e91e63; }
     .border-aftertaste { border-left: 5px solid #4caf50; }
     .border-overall { border-left: 5px solid #ff9800; }
-    
+     
     .pill-container {
       display: flex;
       flex-wrap: wrap;
@@ -166,7 +166,7 @@
     }
     .req-label { color: #cc0000; font-size: 11px; font-weight: normal; margin-left: 4px; }
     .opt-label { color: #757575; font-size: 11px; font-weight: normal; margin-left: 4px; }
-    
+     
     textarea.category-note {
       height: 70px;
       font-size: 13px;
@@ -188,7 +188,7 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .login-btn:disabled, .save-btn:disabled { background-color: #cccccc; cursor: not-allowed; }
-    
+     
     .toggle-wrapper {
       display: flex;
       align-items: center;
@@ -210,7 +210,7 @@
       color: #999;
       margin-top: 15px;
     }
-    
+     
     /* Login Overlay */
     #loginOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -238,15 +238,15 @@
     <div class="login-box">
       <div style="text-align:center; margin-bottom:20px;">
         <span style="font-size: 28px;">🍷</span>
-        <h2 style="color:var(--primary); margin-top:10px;">WINE TASTER 2026</h2>
+        <h2 id="login-title" style="color:var(--primary); margin-top:10px; text-transform: uppercase;">WINE TASTER 2026</h2>
         <p style="font-size:12px; color:#666; margin-top:4px;">Secure Ecosystem Sign-In</p>
       </div>
-      
+       
       <div id="loadingState" style="text-align: center; padding: 20px 0;">
         <div style="font-size: 15px; font-weight: bold; color: var(--primary); margin-bottom: 8px;">Please wait...</div>
         <div style="font-size: 13px; color: #666;">Initializing tasting panel workspace</div>
       </div>
-      
+       
       <div id="loginForm" style="display:none;">
         <label for="loginEmailInput">REGISTERED EMAIL ADDRESS</label>
         <input type="email" id="loginEmailInput" placeholder="name@domain.com" autocomplete="email">
@@ -260,7 +260,7 @@
       <div id="registerForm" style="display:none;">
         <label for="regEmail">YOUR EMAIL ADDRESS</label>
         <input type="email" id="regEmail" placeholder="name@domain.com">
-        
+         
         <label for="regType">ACCOUNT CLASSIFICATION TYPE</label>
         <select id="regType" onchange="toggleRegFields()">
           <option value="">-- Select Type --</option>
@@ -301,12 +301,12 @@
   </div>
 
   <div id="appContent" style="display:none;">
-    <div class="header-bar">WINE TASTER ENGINE</div>
-    
+    <div id="app-title" class="header-bar">WINE TASTER ENGINE</div>
+     
     <div class="container">
       <div class="card" id="selectionCard">
         <div class="card-title">Active Metrics Workspace</div>
-        
+         
         <div style="display:none; margin-bottom:15px;" id="tasterSelectWrapper">
           <label for="tasterSelect">ACTIVE PROFILE TOKEN</label>
           <select id="tasterSelect" onchange="checkForExistingData()"></select>
@@ -316,10 +316,10 @@
         <select id="wineSelect" onchange="handleWineChange()">
           <option value="">-- Select Wine --</option>
         </select>
-        
+         
         <input type="text" id="wineInput" style="display:none;" placeholder="Enter Manual Wine Identifier..." oninput="handleWineChange()">
         <select id="adminWineSelect" style="display:none;" onchange="handleWineChange()"></select>
-        
+         
         <div class="toggle-wrapper">
           <input type="checkbox" id="isJudge">
           <label for="isJudge" style="margin-bottom:0; cursor:pointer;">Evaluate Entry as Certified Wine Judge</label>
@@ -333,7 +333,7 @@
 
       <div class="card" id="scoringCard" style="display:none;">
         <div class="card-title">Organoleptic Scoring Matrix</div>
-        
+         
         <div class="toggle-wrapper" style="margin-bottom:15px;">
           <input type="checkbox" id="maxMode" onchange="toggleMaxMode()">
           <label for="maxMode" style="margin-bottom:0; cursor:pointer;">Initialize System Default Parameters to Maximum Value</label>
@@ -360,7 +360,7 @@
             <label for="scoreOvr">OVERALL QUALITY (Max 2)</label>
             <select id="scoreOvr" onchange="calcTotal()"></select>
           </div>
-          
+           
           <div class="total-container">
             <div style="font-size:11px; font-weight:bold; color:#777; text-transform:uppercase;">Cumulative Score Summary</div>
             <div class="total-num" id="totalDisplay">11.0</div>
@@ -373,7 +373,7 @@
       <div style="margin-top:20px;">
         <button id="saveBtn" class="save-btn" onclick="submitForm()">COMMIT EVALUATION TO DATABASE</button>
       </div>
-      
+       
       <div class="status-bar" id="statusArea">Production Build Initialization Layer...</div>
     </div>
   </div>
@@ -381,7 +381,7 @@
   <script>
     const UI_VERSION = "5.0-EXTERNAL-HOST";
     console.log("--- INITIALIZING APP VERSION " + UI_VERSION + " ---");
-    
+     
     // REPLACE THIS URL WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP LINK EVERY TIME YOU EXECUTED A NEW DEPLOYMENT
     const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlwibVIJ7XnLglJSZR0CX4h18HJcu97QOE2kNd2sMMrbAEFGl-_MnB3XZn1eCSY6xu/exec";
 
@@ -405,13 +405,22 @@
       populateScore('scoreOvr', 2);
       resetScores(false);
 
+      // Check the URL query string for "NTP" parameters to update branding headers dynamically
+      const urlQueryUppercase = window.location.search.toUpperCase();
+      if (urlQueryUppercase.includes('NTP')) {
+        const loginTitle = document.getElementById('login-title');
+        const appTitle = document.getElementById('app-title');
+        if (loginTitle) loginTitle.textContent = 'NTP 2026';
+        if (appTitle) appTitle.textContent = 'NTP 2026';
+      }
+
       const statusAreaEl = document.getElementById('statusArea');
       if (statusAreaEl) {
          statusAreaEl.innerHTML = "Fetching secure ecosystem metrics...";
       }
 
       console.log("FETCH TRACE: Requesting database arrays from Google script data routing gateway...");
-      
+       
       // Perform an isolated network fetch extraction to map database without forcing active Google cookie authorization headers
       fetch(GOOGLE_WEB_APP_URL)
         .then(function(response) {
@@ -422,7 +431,7 @@
         })
         .then(function(data) {
           console.log("FETCH TRACE: Raw database package received successfully.");
-          
+           
           // Map response data matrices directly to local layout rules
           window.WINES = data.wines || [];
           window.DESCRIPTORS = data.descriptors || [];
@@ -469,7 +478,7 @@
     function executeCustomChapterLogin(incomingParam) {
        currentUserChapter = "HudsonMA";
        currentUserRole = "ntpuser";
-       
+        
        let deviceToken = localStorage.getItem('hudson_anon_token');
        if (!deviceToken) {
           const randomHex = Math.floor(Math.random() * 16777215).toString(16).toUpperCase();
@@ -480,25 +489,25 @@
 
        const mainSel = document.getElementById('tasterSelect');
        if (mainSel) {
-         mainSel.innerHTML = ""; 
-         const opt = document.createElement('option'); 
-         opt.value = anonymousTasterToken; 
-         opt.text = anonymousTasterToken;
-         mainSel.appendChild(opt);
-         mainSel.value = anonymousTasterToken;
+          mainSel.innerHTML = ""; 
+          const opt = document.createElement('option'); 
+          opt.value = anonymousTasterToken; 
+          opt.text = anonymousTasterToken;
+          mainSel.appendChild(opt);
+          mainSel.value = anonymousTasterToken;
        }
 
        document.getElementById('loginOverlay').style.display = 'none';
        document.getElementById('appContent').style.display = 'block';
-       
+        
        let targetScopeToken = "HUDSONMA_NTP";
        if (incomingParam === "hudsonma_chap") {
           targetScopeToken = "HUDSONMA"; 
        }
-       
+        
        filterWineDropdown('chapter', 'ntpchapadmin', targetScopeToken);
        configureUserMode('chapter', 'ntpchapadmin');
-       
+        
        document.getElementById('wineLabel').innerText = "SELECT WINE";
        document.getElementById('noDescMode').checked = false; 
        renderDescriptors();
@@ -507,10 +516,10 @@
     function filterWineDropdown(mode, role, overrideScope) {
       const wineSel = document.getElementById('wineSelect');
       const adminSel = document.getElementById('adminWineSelect');
-      
+       
       wineSel.innerHTML = '<option value="">-- Select Wine --</option>';
       adminSel.innerHTML = '<option value="">-- Select Wine --</option>';
-      
+       
       let targetScope = 'NTP';
       if (overrideScope) { 
           targetScope = overrideScope.toUpperCase(); 
@@ -528,7 +537,7 @@
               targetScope = 'NTP'; 
           }
       }
-      
+       
       targetScope = targetScope.trim().toUpperCase();
       let count = 0;
 
@@ -539,12 +548,12 @@
         if (currentWineScope === targetScope) {
           count++;
           const userTxt = w.code + " – " + w.category;
-          
+           
           const opt1 = document.createElement('option'); 
           opt1.value = w.code; 
           opt1.text = userTxt; 
           wineSel.appendChild(opt1);
-          
+           
           const opt2 = document.createElement('option'); 
           opt2.value = w.code; 
           opt2.text = w.code + " – " + (w.fullName || w.category); 
@@ -553,26 +562,26 @@
       });
 
       if (count === 0) {
-         const cleanDisplayToken = targetScope.replace("_WINELIST", "").replace("_WINE_LIST", "");
-         const noDataTxt = "(No wines found for " + cleanDisplayToken + ")";
-         
-         const optA = document.createElement('option'); optA.text = noDataTxt; wineSel.appendChild(optA);
-         const optB = document.createElement('option'); optB.text = noDataTxt; adminSel.appendChild(optB);
+          const cleanDisplayToken = targetScope.replace("_WINELIST", "").replace("_WINE_LIST", "");
+          const noDataTxt = "(No wines found for " + cleanDisplayToken + ")";
+          
+          const optA = document.createElement('option'); optA.text = noDataTxt; wineSel.appendChild(optA);
+          const optB = document.createElement('option'); optB.text = noDataTxt; adminSel.appendChild(optB);
       }
     }
 
     function getActiveWineCode() {
       const input = document.getElementById("wineInput");
       if (input && input.style.display !== "none" && input.value) return input.value.trim();
-      
+       
       const adminDrop = document.getElementById("adminWineSelect");
       if (currentUserRole === "ntpcommadmin" || currentUserRole === "admin") {
-         if (adminDrop && adminDrop.value) return adminDrop.value;
+          if (adminDrop && adminDrop.value) return adminDrop.value;
       }
-      
+       
       const drop = document.getElementById("wineSelect");
       if (drop) return drop.value;
-      
+       
       return "";
     }
 
@@ -585,80 +594,80 @@
       const root = document.getElementById("descriptorRoot");
       const scoreCard = document.getElementById("scoringCard");
       const wineCode = String(getActiveWineCode() || "").trim().toUpperCase();
-      
+       
       selectedState = {};
-      
+       
       if (!wineCode) {
         root.innerHTML = "<div style='text-align:center; padding:40px; color:#bbb;'>Select a wine to load descriptors.</div>";
         scoreCard.style.display = "none";
         return;
       }
-      
+       
       const wineObj = window.WINES.find(function(w) {
         return String(w.code || "").trim().toUpperCase() === wineCode;
       });
-      
+       
       if (!wineObj) {
         root.innerHTML = "<div style='text-align:center; padding:40px; color:#bbb;'>Select a wine to load descriptors.</div>";
         scoreCard.style.display = "none";
         return;
       }
-      
+       
       scoreCard.style.display = "block";
       root.style.display = "block";
-      
+       
       const currentType = wineObj.type ? String(wineObj.type).toLowerCase().trim() : "";
       const currentCat = wineObj.category ? String(wineObj.category).toLowerCase().trim() : "";
       const fullTypeSearch = (currentType + " " + currentCat).toLowerCase();
-      
+       
       let html = "";
       const coreCats = ["Appearance", "Aroma", "Taste", "Aftertaste", "Overall"];
       const noDesc = document.getElementById("noDescMode").checked;
-      
+       
       window.DESCRIPTORS.forEach(function(superCat) {
         const catName = superCat.superCategory;
         const catKey = String(catName).toLowerCase();
         let groupHtml = "";
         const reqText = getRequirementText(catName, "super");
-        
+         
         if (superCat.families) {
           superCat.families.forEach(function(fam) { 
             let famHtml = "";
             let subGroups = fam.subcategories;
             if (!subGroups || subGroups.length === 0) subGroups = [fam]; 
-            
+             
             subGroups.forEach(function(sub) {
               if (!sub.aromas) return;
-              
+               
               const visible = sub.aromas.filter(function(item) {
                 if (!item.typeLimit) return true;
                 const limit = String(item.typeLimit).toLowerCase().trim();
                 if (limit === "" || limit === "both" || limit === "all") return true;
-                
+                 
                 // Varietal match condition logic bypass fallback
                 if (fullTypeSearch.includes(limit) || limit.includes(currentCat) || currentCat.includes(limit)) {
                   return true;
                 }
                 return false;
               });
-              
+               
               if (visible.length > 0) {
                 let instr = (sub.instruction || "").toString();
                 if (instr.toLowerCase().includes("select 1, if important")) instr = "Optional, select 1"; 
                 else if (instr.toLowerCase().includes("if important")) instr = instr.replace(/if important/i, "optional"); 
                 if (sub.name && sub.name.toLowerCase().includes("aesthetic")) instr = "Optional, select 1"; 
-                
+                 
                 const isRadio = instr.includes("1");
                 const isYellow = instr.toLowerCase().includes("optional");
                 let labelClass = isYellow ? "opt-label" : "req-label";
                 let labelText = instr;
-                
+                 
                 if (noDesc && !isYellow) labelText = "";
-                
+                 
                 const displaySubName = sub.name || fam.name || "Options";
                 const label = labelText ? displaySubName + " <span class='" + labelClass + "'>(" + labelText + ")</span>" : displaySubName;
                 const mode = isRadio ? "single" : "multi";
-                
+                 
                 famHtml += "<div style='margin-bottom:10px;'><div style='font-size:13px; font-weight:bold; color:#555; margin-bottom:5px;'><span>" + label + "</span></div><div class='pill-container' data-cat='" + catName + "' data-mode='" + mode + "'>";
                 visible.forEach(function(item) {
                   const val = item.name.replace(/'/g, "\\'");
@@ -667,20 +676,20 @@
                 famHtml += "</div></div>";
               }
             });
-            
+             
             if (famHtml) {
               const famReq = getRequirementText(fam.name, "family");
               groupHtml += "<div style='margin-top:15px;'><div style='font-weight:bold; font-size:15px; color:#222; margin-bottom:8px; border-bottom:1px solid #eee;'>🔸 " + fam.name + " <span class='req-label'>" + famReq + "</span></div>" + famHtml + "</div>";
             }
           });
         }
-        
+         
         if (groupHtml || coreCats.some(function(c) { return catKey.includes(c.toLowerCase()); })) {
           // FIXED: Accordion container loaded cleanly without 'open' flag class assignment to keep it collapsed by default
           html += "<div class='desc-section border-" + catKey + "'><div class='desc-header' onclick='this.nextElementSibling.classList.toggle(\"open\")'><span>" + catName + " <span class='req-label'>" + reqText + "</span></span> <span style='font-size:18px;'>+</span></div><div class='desc-body'>" + groupHtml + "<textarea id='note_" + catName + "' class='category-note' placeholder='Add specific notes for " + catName + " (optional)...'></textarea></div></div>";
         }
       });
-      
+       
       root.innerHTML = html;
     }
 
@@ -691,11 +700,11 @@
        const input = document.getElementById('wineInput'); 
        const noDescBox = document.getElementById('noDescMode'); 
        const noDescLabel = noDescBox.parentElement; 
-       
+        
        document.getElementById('selectionCard').style.display = 'block'; 
        document.getElementById('scoringCard').style.display = 'block'; 
        document.getElementById('descriptorRoot').style.display = 'block'; 
-       
+        
        if (userMode === 'group') { 
           label.innerText = "ENTER WINE NAME"; drop.style.display = 'none'; drop.value = ""; input.style.display = 'block'; noDescLabel.style.display = 'none'; noDescBox.checked = true; 
        } else if (userMode === 'chapter' || role === 'ntpchapadmin') { 
@@ -714,7 +723,7 @@
       const container = el.parentElement; 
       const mode = container.getAttribute('data-mode'); 
       if (!selectedState[category]) selectedState[category] = [];
-      
+       
       if (mode === 'single') { 
         if (el.classList.contains('selected')) { 
           el.classList.remove('selected'); removeFromArray(selectedState[category], value); 
@@ -742,15 +751,15 @@
     function attemptLogin() { 
       const inputVal = document.getElementById('loginEmailInput').value.trim(); 
       if (!inputVal) { alert("Please enter your email."); return; }
-      
+       
       const matches = window.USERS.filter(function(u) { 
         return u.email.toLowerCase() === inputVal.toLowerCase(); 
       }); 
-      
+       
       if (matches.length === 0) { 
         if (confirm("Email not found. Register?")) showRegister(); return; 
       } 
-      
+       
       if (matches.length > 1) { 
         const overlay = document.getElementById('roleOverlay'); 
         const btnContainer = document.getElementById('roleButtons'); 
@@ -773,15 +782,15 @@
       currentUserRole = userObj.role;
       currentUserChapter = userObj.chapter || "";
       localStorage.setItem('wineTasterEmail', userObj.email);
-      
+       
       document.getElementById('loginOverlay').style.display = 'none';
       document.getElementById('appContent').style.display = 'block';
-      
+       
       const tasterSel = document.getElementById('tasterSelect');
       tasterSel.innerHTML = "";
       const opt = document.createElement('option'); opt.value = userObj.email; opt.text = userObj.email;
       tasterSel.appendChild(opt);
-      
+       
       filterWineDropdown(userObj.mode, userObj.role);
       configureUserMode(userObj.mode, userObj.role);
       renderDescriptors();
@@ -800,9 +809,9 @@
       const chapDiv = document.getElementById('regChapterDiv'); 
       const groupDiv = document.getElementById('regGroupDiv'); 
       const instrDiv = document.getElementById('codeInstructions'); 
-      
+       
       if (!type) { codeDiv.style.display = 'none'; chapDiv.style.display = 'none'; groupDiv.style.display = 'none'; return; } 
-      
+       
       codeDiv.style.display = 'block'; 
       const isAdmin = ['NTPComm', 'ChapterAdmin', 'GroupAdmin', 'NTPChapAdmin', 'NTPCommAdmin'].includes(type); 
       if (isAdmin) { 
@@ -810,7 +819,7 @@
       } else { 
         instrDiv.innerHTML = "Please contact your Chapter or Group Leader to obtain registration code verification parameters."; 
       } 
-      
+       
       const needsChapter = ['ChapterAdmin', 'ChapterNTP', 'ChapterStandard', 'NTPChapAdmin'].includes(type); 
       chapDiv.style.display = needsChapter ? 'block' : 'none'; 
       const needsGroup = ['GroupAdmin', 'Group'].includes(type); 
@@ -824,7 +833,7 @@
        const chap = document.getElementById('regChapterName').value.trim();
        const grp = document.getElementById('regGroupName').value.trim();
        if (!email || !type) { alert("Please fill in email and verification classification type."); return; }
-       
+        
        const btn = document.querySelector('#registerForm .login-btn');
        btn.innerText = "Creating Account Profile..."; btn.disabled = true;
 
@@ -881,7 +890,7 @@
       const total = s1 + s2 + s3 + s4 + s5;
       const display = document.getElementById("totalDisplay");
       display.innerText = total.toFixed(1);
-      
+       
       if (total >= 17) display.style.color = "#D4AF37";
       else if (total >= 15) display.style.color = "#C0C0C0";
       else if (total >= 13) display.style.color = "#CD7F32";
@@ -897,22 +906,22 @@
     function checkForExistingData() {
       const wineCode = getActiveWineCode(); const statusArea = document.getElementById('statusArea'); 
       if (!wineCode) { statusArea.innerHTML = "Production Build API Active (" + UI_VERSION + ")"; return; }
-      
+       
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('chap') && urlParams.get('chap').toLowerCase().indexOf("hudsonma") > -1) {
-         statusArea.innerHTML = "Syncing anonymous device storage values...";
-         
-         fetch(GOOGLE_WEB_APP_URL + "?action=getExisting&taster=" + anonymousTasterToken + "&wine=" + wineCode + "&tab=HudsonMA_NTP_Scores")
-         .then(res => res.json())
-         .then(result => {
-            if (result.found) { 
-              statusArea.innerHTML = "<span style='color:#2e7d32; font-weight:bold;'>✓ Loaded previous entries cleanly</span>"; 
-              populateFormWithData(result); expandActiveSections(); 
-            } else { 
-              statusArea.innerHTML = "Production Build API Active (" + UI_VERSION + ")"; resetScores(document.getElementById('maxMode').checked); 
-            }
-         });
-         return;
+          statusArea.innerHTML = "Syncing anonymous device storage values...";
+          
+          fetch(GOOGLE_WEB_APP_URL + "?action=getExisting&taster=" + anonymousTasterToken + "&wine=" + wineCode + "&tab=HudsonMA_NTP_Scores")
+          .then(res => res.json())
+          .then(result => {
+             if (result.found) { 
+               statusArea.innerHTML = "<span style='color:#2e7d32; font-weight:bold;'>✓ Loaded previous entries cleanly</span>"; 
+               populateFormWithData(result); expandActiveSections(); 
+             } else { 
+               statusArea.innerHTML = "Production Build API Active (" + UI_VERSION + ")"; resetScores(document.getElementById('maxMode').checked); 
+             }
+          });
+          return;
       }
     }
 
@@ -923,10 +932,10 @@
        document.getElementById('scoreAft').value = parseFloat(data.scores.aft); 
        document.getElementById('scoreOvr').value = parseFloat(data.scores.ovr); 
        calcTotal(); 
-       
+        
        document.getElementById('isJudge').checked = (data.isJudge === "Yes" || data.isJudge === true);
        selectedState = { 'Appearance': data.descriptors.app, 'Aroma': data.descriptors.aro, 'Taste': data.descriptors.tas, 'Aftertaste': data.descriptors.aft, 'Overall': data.descriptors.ovr }; 
-       
+        
        const cats = ['Appearance', 'Aroma', 'Taste', 'Aftertaste', 'Overall'];
        cats.forEach(function(c) {
            const list = selectedState[c] || [];
@@ -936,7 +945,7 @@
                if (box) box.value = list[noteIndex].slice(1, -1);
            }
        });
-       
+        
        document.querySelectorAll('.pill').forEach(pill => { 
            const catName = pill.parentElement.getAttribute('data-cat'); 
            pill.classList.toggle('selected', selectedState[catName] && selectedState[catName].includes(pill.innerText.trim()));
@@ -947,10 +956,10 @@
        const saveBtn = document.getElementById('saveBtn');
        const wineCode = getActiveWineCode();
        if (!wineCode) { alert("Please select a valid bottle varietal target."); return; }
-       
+        
        const currentTotal = parseFloat(document.getElementById('totalDisplay').textContent) || 0;
        if (currentTotal < 10) { alert("Total Score parameters must evaluate to 10 or above."); return; }
-       
+        
        const cats = ['Appearance', 'Aroma', 'Taste', 'Aftertaste', 'Overall'];
        cats.forEach(function(c) {
            const noteBox = document.getElementById('note_' + c);
@@ -959,11 +968,11 @@
                selectedState[c].push("(" + noteBox.value.trim().replace(/,/g, ';') + ")");
            }
        });
-       
+        
        const wineObj = window.WINES.find(w => w.code === wineCode);
        const urlParams = new URLSearchParams(window.location.search);
        const isHudson = (urlParams.get('chap') && urlParams.get('chap').toLowerCase().indexOf("hudsonma") > -1);
-       
+        
        const payload = {
           taster: isHudson ? anonymousTasterToken : document.getElementById('tasterSelect').value,
           role: currentUserRole, wineCode: wineCode, wineFullName: wineObj ? wineObj.fullName : wineCode, wineType: wineObj ? wineObj.type : "Manual Entry",
@@ -971,7 +980,7 @@
           appearanceDescriptors: selectedState['Appearance'] || [], aromaDescriptors: selectedState['Aroma'] || [], tasteDescriptors: selectedState['Taste'] || [], aftertasteDescriptors: selectedState['Aftertaste'] || [], overallDescriptors: selectedState['Overall'] || [],
           isWineJudge: document.getElementById('isJudge').checked ? "Yes" : "No", targetTabOverride: isHudson ? "HudsonMA_NTP_Scores" : null
        };
-       
+        
        saveBtn.innerText = "Committing transaction..."; 
        saveBtn.disabled = true;
 
