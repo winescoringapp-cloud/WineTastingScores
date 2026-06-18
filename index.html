@@ -933,7 +933,9 @@
        document.getElementById('scoreOvr').value = parseFloat(data.scores.ovr); 
        calcTotal(); 
         
-       document.getElementById('isJudge').checked = (data.isJudge === "Yes" || data.isJudge === true);
+       //document.getElementById('isJudge').checked = (data.isJudge === "Yes" || data.isJudge === true);
+      // Old: document.getElementById('isJudge').checked = (data.isJudge === "Yes" || data.isJudge === true);
+       document.getElementById('isJudge').checked = (data.isJudge === "Judge" || data.isJudge === "Yes" || data.isJudge === true);
        selectedState = { 'Appearance': data.descriptors.app, 'Aroma': data.descriptors.aro, 'Taste': data.descriptors.tas, 'Aftertaste': data.descriptors.aft, 'Overall': data.descriptors.ovr }; 
         
        const cats = ['Appearance', 'Aroma', 'Taste', 'Aftertaste', 'Overall'];
@@ -978,7 +980,10 @@
           role: currentUserRole, wineCode: wineCode, wineFullName: wineObj ? wineObj.fullName : wineCode, wineType: wineObj ? wineObj.type : "Manual Entry",
           appearanceScore: document.getElementById('scoreApp').value, aromaScore: document.getElementById('scoreAro').value, tasteScore: document.getElementById('scoreTas').value, aftertasteScore: document.getElementById('scoreAft').value, overallScore: document.getElementById('scoreOvr').value, totalScore: document.getElementById('totalDisplay').textContent,
           appearanceDescriptors: selectedState['Appearance'] || [], aromaDescriptors: selectedState['Aroma'] || [], tasteDescriptors: selectedState['Taste'] || [], aftertasteDescriptors: selectedState['Aftertaste'] || [], overallDescriptors: selectedState['Overall'] || [],
-          isWineJudge: document.getElementById('isJudge').checked ? "Yes" : "No", targetTabOverride: isHudson ? "HudsonMA_NTP_Scores" : null
+          //isWineJudge: document.getElementById('isJudge').checked ? "Yes" : "No", targetTabOverride: isHudson ? "HudsonMA_NTP_Scores" : null
+         // Old logic layout: isWineJudge: document.getElementById('isJudge').checked ? "Yes" : "No"
+          isWineJudge: document.getElementById('isJudge').checked ? "Judge" : "Non Judge", targetTabOverride: isHudson ? "HudsonMA_NTP_Scores" : null
+  
        };
         
        saveBtn.innerText = "Committing transaction..."; 
